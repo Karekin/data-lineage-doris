@@ -35,6 +35,7 @@ public class PerpetualTableHandler implements IHandler {
         TreeNode<ParseTableNode> root = new TreeNode<>();
         SQLStatement statement;
         try {
+            // TODO 技术方案，为什么使用 Druid 解析 Doris SQL
             statement = SQLUtils.parseSingleStatement(sqlContext.getSql(), sqlContext.getDbType().toLowerCase());
         } catch (Exception e) {
             throw new ParserException("statement parser error：", e);

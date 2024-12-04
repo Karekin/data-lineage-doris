@@ -72,6 +72,7 @@ public class SqlMessageHandler implements BaseMessageHandler {
 
     private void handleSql(SqlRequestContext request, LineageContext context) {
         SqlResponseContext response = new SqlResponseContext();
+        // TODO defaultHandlerChain 没有初始化，没有处理器吧？
         defaultHandlerChain.handle(request, response);
         if (Objects.isNull(response.getLineageTableTree())) {
             return;
