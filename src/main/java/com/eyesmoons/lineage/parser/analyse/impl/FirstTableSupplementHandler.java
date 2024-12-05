@@ -27,14 +27,14 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class FirstTableSupplementHandler implements IHandler {
+    // TODO 配置抽出来
+    private static final String hostUrl = "192.168.1.7:9030";
 
-    private static final String hostUrl = "172.22.224.101:6033";
+    private static final String db = "app_db";
 
-    private static final String db = "tms";
+    private static final String user = "root";
 
-    private static final String user = "shengyu";
-
-    private static final String password = "j1sYxLGcEDhu";
+    private static final String password = "";
 
     @Override
     public void handleRequest(SqlRequestContext request, SqlResponseContext response) {
