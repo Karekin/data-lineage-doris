@@ -4,7 +4,7 @@ services:
   ### Zookeeper ###
   zookeeper:
     image: confluentinc/cp-zookeeper:5.5.0
-    container_name: zookeeper
+    container_name: lineage-zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -15,14 +15,14 @@ services:
   ### Kafka ###
   kafka:
     image: confluentinc/cp-kafka:5.5.0
-    container_name: kafka
+    container_name: lineage-kafka
     ports:
       - "9092:9092"
     environment:
       KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:9092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:19092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_ZOOKEEPER_CONNECT: "lineage-zookeeper:2181"
       KAFKA_BROKER_ID: 1
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
@@ -38,18 +38,12 @@ services:
   ### Neo4j ###
   neo4j:
     image: neo4j/neo4j-arm64-experimental:3.5.33-arm64
-    container_name: neo4j
+    container_name: lineage-neo4j
     ports:
       - "7474:7474"
       - "7687:7687"
     environment:
       - NEO4J_AUTH=none
-      - NEO4J_dbms_security_auth_enabled=false
-      - NEO4J_dbms_memory_pagecache_size=512M
-      - NEO4J_dbms_connectors_default_listen_address=0.0.0.0
-      - NEO4J_dbms_connector_http_listen_address=0.0.0.0:7474
-      - NEO4J_dbms_connector_https_listen_address=0.0.0.0:7473
-      - NEO4J_dbms_connector_bolt_listen_address=0.0.0.0:7687
     volumes:
       - ./neo4j/neo4j_data:/data
       - ./neo4j/neo4j_logs:/logs
@@ -60,7 +54,7 @@ services:
   ### Flink ###
   jobmanager:
     image: flink:1.19.0
-    container_name: jobmanager
+    container_name: lineage-jobmanager
     ports:
       - "8081:8081"
     command: jobmanager
@@ -72,7 +66,7 @@ services:
 
   taskmanager:
     image: flink:1.19.0
-    container_name: taskmanager
+#    container_name: lineage-taskmanager
     depends_on:
       - jobmanager
     command: taskmanager
@@ -88,12 +82,11 @@ services:
   ### Doris ###
   doris:
     image: yagagagaga/doris-standalone:2.1.5
+    container_name: lineage-doris
     ports:
       - "8030:8030"
       - "8040:8040"
       - "9030:9030"
-#    environment:
-#      - BACKEND_LISTEN_HOST=0.0.0.0
     volumes:
       - ./doris/doris_fe_meta:/opt/doris/fe/meta
       - ./doris/doris_be_storage:/opt/doris/be/storage
@@ -103,9 +96,9 @@ services:
   ### Schema Registry ###
   schema-registry:
     image: confluentinc/cp-schema-registry:5.0.0
-    container_name: schema-registry
+    container_name: lineage-schema-registry
     ports:
-      - "8081:8081"
+      - "8082:8081"
     environment:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:9092
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
